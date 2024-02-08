@@ -4,7 +4,10 @@ import bcryptjs from "bcryptjs";
 //! models
 import User from "../models/user.model.js";
 
-export const signUpController = async (req, res) => {
+//! utils
+import { errorHandler } from "../utils/error.js";
+
+export const signUpController = async (req, res, next) => {
   const { username, email, password } = req.body;
 
   //! all false case
@@ -16,7 +19,8 @@ export const signUpController = async (req, res) => {
     username == "" ||
     password == ""
   ) {
-    return res.status(400).json({ message: "All field are required" });
+    // return res.status(400).json({ message: "All field are required" });
+    next(errorHandler(400, "All fields are required"));
   }
 
   //! hashing the password to secure
@@ -34,6 +38,7 @@ export const signUpController = async (req, res) => {
     await newUser.save();
     res.json({ message: "SignUp Successful" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // res.status(500).json({ message: error.message });
+    next(error);
   }
 };
